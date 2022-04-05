@@ -5,13 +5,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 public class Main {
 
     public static boolean inputView;
     public static String inputLevel;
     public static double maxDuration;
+    public static int inputAdditionalParameter;
     public static int minPrice = 0;
     public static int maxPrice = 0;
 
@@ -20,7 +23,7 @@ public class Main {
         ArrayList<Course> courses = new ArrayList<>();
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("course.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("data_course.txt"));
             String r;
 
             while ((r = reader.readLine()) != null) {
@@ -68,7 +71,36 @@ public class Main {
         }
 
         if (outputCourses.size() > 10) {
-
+            additionalParameter();
+            if (inputAdditionalParameter == 1) {
+                Comparator<Course> c = new CourseListenersComparator();
+                TreeSet<Course> courseListenersSort = new TreeSet<>(c);
+                courseListenersSort.addAll(outputCourses);
+                System.out.println("Подходящие курсы:\n");
+                int count = 0;
+                for (Course course : courseListenersSort) {
+                    if (count == 10) break;
+                    System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nСлушателей: %d\nОтзывов: %d" +
+                                    "\nЦена: %d\nПродолжительность: %.1f\n\n",
+                            course.getCourseId(), course.getCourseName(), course.getCourseURL(), course.getNumberOfListeners(),
+                            course.getNumberOfReviews(), course.getCoursePrice(), course.getCourseDuration());
+                    count++;
+                }
+            } else {
+                Comparator<Course> c = new CourseLecturesComparator();
+                TreeSet<Course> courseLecturesSort = new TreeSet<>(c);
+                courseLecturesSort.addAll(outputCourses);
+                System.out.println("Подходящие курсы:\n");
+                int count = 0;
+                for (Course course : courseLecturesSort) {
+                    if (count == 10) break;
+                    System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nКоличество лекций: %d\nОтзывов: %d" +
+                                    "\nЦена: %d\nПродолжительность: %.1f\n\n",
+                            course.getCourseId(), course.getCourseName(), course.getCourseURL(), course.getNumberOfLectures(),
+                            course.getNumberOfReviews(), course.getCoursePrice(), course.getCourseDuration());
+                    count++;
+                }
+            }
         } else {
             System.out.println("Подходящие курсы:\n");
             for (Course course : outputCourses)  {
@@ -120,6 +152,17 @@ public class Main {
         maxDuration = scan.nextDouble();
         if (maxDuration <= 0) {
             throw new Exception("Значение должно быть больше нуля.");
+        }
+    }
+
+    public static void additionalParameter() throws Exception {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("Выберите дополнительный параметр:\n1. Большее количество слушателей" +
+                "\n2. Меньше количество лекций");
+        inputAdditionalParameter = scan.nextInt();
+        if (inputAdditionalParameter < 1 || inputAdditionalParameter > 2) {
+            throw new Exception("Введено некорректное значение.");
         }
     }
 }

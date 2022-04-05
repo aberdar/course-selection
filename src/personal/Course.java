@@ -1,9 +1,8 @@
 package personal;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Comparator;
 
-public class Course {
+public class Course implements Comparable<Course> {
 
     public int courseId;
     public String courseName;
@@ -94,4 +93,24 @@ public class Course {
         return courseComplexity;
     }
 
+    @Override
+    public int compareTo(Course o) {
+        return courseName.compareTo(o.courseName);
+    }
+}
+
+class CourseListenersComparator implements Comparator<Course> {
+
+    @Override
+    public int compare(Course o1, Course o2) {
+        return Integer.compare(o2.getNumberOfListeners(), o1.getNumberOfListeners());
+    }
+}
+
+class CourseLecturesComparator implements Comparator<Course> {
+
+    @Override
+    public int compare(Course o1, Course o2) {
+        return Integer.compare(o1.getNumberOfLectures(), o2.getNumberOfLectures());
+    }
 }
