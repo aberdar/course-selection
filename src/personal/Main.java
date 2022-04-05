@@ -57,6 +57,26 @@ public class Main {
         }
 
         userRequest();
+
+        ArrayList<Course> outputCourses = new ArrayList<>();
+        for (Course element : courses) {
+            if (element.getCoursePrice() >= minPrice && element.getCoursePrice() <= maxPrice
+                    && inputLevel.equals(element.getCourseComplexity())
+                    && element.getCourseDuration() <= maxDuration) {
+                outputCourses.add(element);
+            }
+        }
+
+        if (outputCourses.size() > 10) {
+
+        } else {
+            System.out.println("Подходящие курсы:\n");
+            for (Course course : outputCourses)  {
+                System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nЦена: %d\nПродолжительность: %.1f\n\n",
+                        course.getCourseId(), course.getCourseName(), course.getCourseURL(),
+                        course.getCoursePrice(), course.getCourseDuration());
+            }
+        }
     }
 
     public static void userRequest() throws Exception {
