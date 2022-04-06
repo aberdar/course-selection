@@ -5,9 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Scanner;
-import java.util.TreeSet;
+
 
 public class Main {
 
@@ -63,50 +62,36 @@ public class Main {
 
         ArrayList<Course> outputCourses = new ArrayList<>();
         for (Course element : courses) {
-            if (element.getCoursePrice() >= minPrice && element.getCoursePrice() <= maxPrice
-                    && inputLevel.equals(element.getCourseComplexity())
-                    && element.getCourseDuration() <= maxDuration) {
+            if (trueCourses(element)) {
                 outputCourses.add(element);
             }
         }
 
         if (outputCourses.size() > 10) {
             additionalParameter();
+            System.out.println("\nПодходящие курсы:\n");
             if (inputAdditionalParameter == 1) {
-                Comparator<Course> c = new CourseListenersComparator();
-                TreeSet<Course> courseListenersSort = new TreeSet<>(c);
-                courseListenersSort.addAll(outputCourses);
-                System.out.println("Подходящие курсы:\n");
-                int count = 0;
-                for (Course course : courseListenersSort) {
-                    if (count == 10) break;
-                    System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nСлушателей: %d\nОтзывов: %d" +
-                                    "\nЦена: %d\nПродолжительность: %.1f\n\n",
-                            course.getCourseId(), course.getCourseName(), course.getCourseURL(), course.getNumberOfListeners(),
-                            course.getNumberOfReviews(), course.getCoursePrice(), course.getCourseDuration());
-                    count++;
-                }
+                courses.stream().sorted(new CourseListenersComparator())
+                        .limit(10)
+                        .forEach(p -> System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nСлушателей: %d\nКоличество лекций: %d\nОтзывов: %d" +
+                                   "\nЦена: %d\nПродолжительность: %.1f\n\n",
+                            p.getCourseId(), p.getCourseName(), p.getCourseURL(), p.getNumberOfListeners(), p.getNumberOfLectures(),
+                           p.getNumberOfReviews(), p.getCoursePrice(), p.getCourseDuration()));
             } else {
-                Comparator<Course> c = new CourseLecturesComparator();
-                TreeSet<Course> courseLecturesSort = new TreeSet<>(c);
-                courseLecturesSort.addAll(outputCourses);
-                System.out.println("Подходящие курсы:\n");
-                int count = 0;
-                for (Course course : courseLecturesSort) {
-                    if (count == 10) break;
-                    System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nКоличество лекций: %d\nОтзывов: %d" +
-                                    "\nЦена: %d\nПродолжительность: %.1f\n\n",
-                            course.getCourseId(), course.getCourseName(), course.getCourseURL(), course.getNumberOfLectures(),
-                            course.getNumberOfReviews(), course.getCoursePrice(), course.getCourseDuration());
-                    count++;
-                }
+                courses.stream().sorted(new CourseLecturesComparator())
+                        .limit(10)
+                        .forEach(p -> System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nСлушателей: %d\nКоличество лекций: %d\nОтзывов: %d" +
+                                        "\nЦена: %d\nПродолжительность: %.1f\n\n",
+                            p.getCourseId(), p.getCourseName(), p.getCourseURL(),p.getNumberOfListeners(), p.getNumberOfLectures(),
+                            p.getNumberOfReviews(), p.getCoursePrice(), p.getCourseDuration()));
             }
         } else {
-            System.out.println("Подходящие курсы:\n");
+            System.out.println("\nПодходящие курсы:\n");
             for (Course course : outputCourses)  {
-                System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nЦена: %d\nПродолжительность: %.1f\n\n",
-                        course.getCourseId(), course.getCourseName(), course.getCourseURL(),
-                        course.getCoursePrice(), course.getCourseDuration());
+                System.out.printf("ID: %d\nНазвание: %s\nСсылка: %s\nСлушателей: %d\nКоличество лекций: %d\nОтзывов: %d" +
+                                "\nЦена: %d\nПродолжительность: %.1f\n\n",
+                        course.getCourseId(), course.getCourseName(), course.getCourseURL(),course.getNumberOfListeners(), course.getNumberOfLectures(),
+                        course.getNumberOfReviews(), course.getCoursePrice(), course.getCourseDuration());
             }
         }
     }
@@ -120,12 +105,12 @@ public class Main {
 
         if (inputView) {
             System.out.println("Укажите диапазон стоимости: ");
-            System.out.println("От: ");
+            System.out.print("От: ");
             minPrice = scan.nextInt();
             if (minPrice < 0) {
                 throw new Exception("Минимальная стоимость должна быть больше либо равной нулю.");
             }
-            System.out.println("До: ");
+            System.out.print("До: ");
             maxPrice = scan.nextInt();
             if (minPrice > maxPrice) {
                 throw new Exception("Минимальная стоимость не может быть больше максимальной.");
@@ -148,7 +133,7 @@ public class Main {
         if (levelInput == 3) inputLevel = "Expert Level";
         if (levelInput == 4) inputLevel = "All Levels";
 
-        System.out.println("Максимальная продолжительность курса: ");
+        System.out.print("Максимальная продолжительность курса: ");
         maxDuration = scan.nextDouble();
         if (maxDuration <= 0) {
             throw new Exception("Значение должно быть больше нуля.");
@@ -164,5 +149,12 @@ public class Main {
         if (inputAdditionalParameter < 1 || inputAdditionalParameter > 2) {
             throw new Exception("Введено некорректное значение.");
         }
+    }
+
+    public static boolean trueCourses(Course element) {
+        return element.getCoursePrice() >= minPrice
+                && element.getCoursePrice() <= maxPrice
+                && inputLevel.equals(element.getCourseComplexity())
+                && element.getCourseDuration() <= maxDuration;
     }
 }
