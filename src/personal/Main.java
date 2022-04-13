@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-
 public class Main {
 
     public static boolean inputView;
@@ -62,11 +61,20 @@ public class Main {
         levelCourseUserInput();
         durationCourseUserInput();
 
-
         ArrayList<Course> outputCourses = new ArrayList<>();
         for (Course element : courses) {
             if (trueCourses(element)) {
                 outputCourses.add(element);
+            }
+        }
+
+        if (outputCourses.size() == 0) {
+            viewCoursesReset();
+            System.out.println("\nПодходящие " + viewCoursePrint() + " курсы не были найдены.\nПоиск по всем видам куров.\n");
+            for (Course element : courses) {
+                if (trueCourses(element)) {
+                    outputCourses.add(element);
+                }
             }
         }
 
@@ -204,5 +212,21 @@ public class Main {
                 element.getNumberOfReviews(),
                 element.getCoursePrice(),
                 element.getCourseDuration());
+    }
+
+    public static void viewCoursesReset() {
+
+        if (inputView) {
+            minPrice = 0;
+        }
+        maxPrice = (int)Math.pow(10, 9);
+    }
+
+    public static String viewCoursePrint() {
+
+        if (inputView) {
+            return "платные";
+        }
+        return "бесплатные";
     }
 }
