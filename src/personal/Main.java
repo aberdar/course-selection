@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 
 public class Main {
 
@@ -47,8 +49,8 @@ public class Main {
                     course.setCourseDuration(Double.parseDouble(collectionData[9]));
 
                     courses.add(course);
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
+                } catch ( DataFormatException | URISyntaxException exception) {
+                    System.out.println(exception.getMessage());
                 }
             }
         } catch (FileNotFoundException ex) {
